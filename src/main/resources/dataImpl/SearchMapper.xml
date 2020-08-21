@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxxz.oasis.ouroasis.data.SearchMapper">
+    <select id="selectDocumentByAuthor" resultMap="Document">
+        select
+        da.doc_title,author,author_key,count_ref,sea_pdf,abstract,pub_year,author_aff,pub_title
+        from
+        (select doc_title from d_author where author like concat('%',#{authorName},'%')) as da
+        join
+        t_pub pu
+        on
+        da.doc_title=pu.doc_title
+        join
+        t_paper pa
+        on
+        da.doc_title=pa.doc_title
+        join
+        t_search s
+        on
+        da.doc_title=s.doc_title
+        join
+        t_count c
+        on
+        da.doc_title=c.doc_title
+        join
+        d_key dk
+        on
+        da.doc_title=dk.doc_title
+        join
+        d_author da1
+        on
+        da.doc_title=da1.doc_title
+        where
+        da1.author_aff!='NA'
+    </select>
+
+    <select id="selectDocumentByAffiliation" resultMap="Document">
+        select
+        da.doc_title,author,author_key,count_ref,sea_pdf,abstract,pub_year,author_aff,pub_title
+        from
+        d_author da
+        join
+        t_pub pu
+        on
+        da.doc_title=pu.doc_title
+        join
+        t_paper pa
+        on
+        da.doc_title=pa.doc_title
+        join
+        t_search s
+        on
+        da.doc_title=s.doc_title
+        join
+        t_count c
+        on
+        da.doc_title=c.doc_title
+        join
+        d_key dk
+        on
+        da.doc_title=dk.doc_title
+        where
+        da.author_aff like concat('%',#{affiliation},'%')
+    </select>
+
+    <select id="selectDocumentByMeeting" resultMap="Document">
+        select
+        da.doc_title,author,author_key,count_ref,sea_pdf,abstract,pub_year,author_aff,pub_title
+        from
+        d_author da
+        join
+        t_pub pu
+        on
+        da.doc_title=pu.doc_title
+        join
+        t_paper pa
+        on
+        da.doc_title=pa.doc_title
+        join
+        t_search s
+        on
+        da.doc_title=s.doc_title
+        join
+        t_count c
+        on
+        da.doc_title=c.doc_title
+        join
+        d_key dk
+        on
+        da.doc_title=dk.doc_title
+        where
+        pu.pub_title like concat('%',#{meeting},'%') and da.author_aff!='NA'
+    </select>
+
+    <select id="selectDocumentByKeyword" resultMap="Document">
+        select
+        da.doc_title,author,author_key,count_ref,sea_pdf,abstract,pub_year,author_aff,pub_title
+        from
+        d_author da
+        join
+        t_pub pu
+        on
+        da.doc_title=pu.doc_title
+        join
+        t_paper pa
+        on
+        da.doc_title=pa.doc_title
+        join
+        t_search s
+        on
+        da.doc_title=s.doc_title
+        join
+        t_count c
+        on
+        da.doc_title=c.doc_title
+        join
+        d_key dk
+        on
+        da.doc_title=dk.doc_title
+        where
+        dk.author_key like concat('%',#{keyword},'%') and da.author_aff!='NA'
+    </select>
+
+    <select id="selectDocumentCombined" resultMap="Document">
+        select
+        da.doc_title,author,author_key,count_ref,sea_pdf,abstract,pub_year,author_aff,pub_title
+        from
+        d_author da
+        join
+        (select * from t_pub where pub_title like concat('%',#{meeting},'%')) as pu
+        on
+        da.doc_title=pu.doc_title
+        join
+        t_paper pa
+        on
+        da.doc_title=pa.doc_title
+        join
+        t_search s
+        on
+        da.doc_title=s.doc_title
+        join
+        t_count c
+        on
+        da.doc_title=c.doc_title
+        join
+        (select * from d_key where author_key like concat('%',#{keyword},'%')) as dk
+        on
+        da.doc_title=dk.doc_title
+        where
+        da.author_aff like concat('%',#{affiliation},'%') and da.author like concat('%',#{authorName},'%')
+        and
+        da.author_aff!='NA'
+    </select>
+
+    <resultMap id="Document" type="com.lxxz.oasis.ouroasis.po.Document">
+        <result column="doc_title" property="documentTitle"></result>
+        <result column="pub_title" property="publicationTitle"></result>
+        <result column="pub_year" property="publicationYear"></result>
+        <result column="abstract" property="theAbstract"></result>
+        <result column="sea_pdf" property="pdfLink"></result>
+        <result column="count_ref" property="referenceCount"></result>
+        <collection property="keywords" ofType="String">
+            <result column="author_key"></result>
+        </collection>
+        <collection property="authors" ofType="com.lxxz.oasis.ouroasis.po.Author">
+            <result column="author" property="name"></result>
+            <result column="author_aff" property="affiliation"></result>
+        </collection>
+    </resultMap>
+
+    <select id="selectDocumentByTitle" resultMap="DocumentForm">
+        select da.doc_title,author,author_aff,pub_title,pub_year,sea_pdf,author_key,count_ref,publisher,doc_ident,abstract
+        from (select doc_title,author,author_aff from d_author da0 where da0.doc_title=#{title}) da
+        join t_pub tp
+        on tp.doc_title=da.doc_title
+        join t_search ts
+        on ts.doc_title=da.doc_title
+        join d_key dk
+        on dk.doc_title=da.doc_title
+        join t_count tc
+        on tc.doc_title=da.doc_title
+        join t_paper tpa
+        on tpa.doc_title=da.doc_title
+        where da.author_aff!='NA'
+    </select>
+
+    <resultMap id="DocumentForm" type="com.lxxz.oasis.ouroasis.vo.DocumentForm">
+        <result column="doc_title" property="title"></result>
+        <result column="pub_title" property="publicTitle"></result>
+        <result column="pub_yeat" property="year"></result>
+        <result column="sea_pdf" property="pdfLink"></result>
+        <result column="count_ref" property="referenceCount"></result>
+        <result column="publisher" property="publisher"></result>
+        <result column="doc_ident" property="docID"></result>
+        <result column="abstract" property="paperAbstract"></result>
+        <collection property="authors" ofType="String">
+            <result column="author"></result>
+        </collection>
+        <collection property="affiliations" ofType="String">
+            <result column="author_aff"></result>
+        </collection>
+        <collection property="keywords" ofType="String">
+            <result column="author_key"></result>
+        </collection>
+    </resultMap>
+</mapper>

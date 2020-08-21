@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxxz.oasis.ouroasis.data.AuthorRankDao">
+  <resultMap id="BaseResultMap" type="com.lxxz.oasis.ouroasis.po.AuthorRank">
+    <id column="author" jdbcType="VARCHAR" property="author" />
+    <result column="pub_count" jdbcType="INTEGER" property="pubCount" />
+    <result column="cite_count" jdbcType="INTEGER" property="citeCount" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    author, pub_count, cite_count
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from author_rank
+    where author = #{author,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from author_rank
+    where author = #{author,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" keyColumn="author" keyProperty="author" parameterType="com.lxxz.oasis.ouroasis.po.AuthorRank" useGeneratedKeys="true">
+    insert ignore into author_rank (author,pub_count, cite_count)
+    values (#{author},#{pubCount,jdbcType=INTEGER}, #{citeCount,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" keyColumn="author" keyProperty="author" parameterType="com.lxxz.oasis.ouroasis.po.AuthorRank" useGeneratedKeys="true">
+    insert into author_rank
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="pubCount != null">
+        pub_count,
+      </if>
+      <if test="citeCount != null">
+        cite_count,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="pubCount != null">
+        #{pubCount,jdbcType=INTEGER},
+      </if>
+      <if test="citeCount != null">
+        #{citeCount,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lxxz.oasis.ouroasis.po.AuthorRank">
+    update author_rank
+    <set>
+      <if test="pubCount != null">
+        pub_count = #{pubCount,jdbcType=INTEGER},
+      </if>
+      <if test="citeCount != null">
+        cite_count = #{citeCount,jdbcType=INTEGER},
+      </if>
+    </set>
+    where author = #{author,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lxxz.oasis.ouroasis.po.AuthorRank">
+    update author_rank
+    set pub_count = #{pubCount,jdbcType=INTEGER},
+      cite_count = #{citeCount,jdbcType=INTEGER}
+    where author = #{author,jdbcType=VARCHAR}
+  </update>
+  <select id="selectAuthorCount" resultType="java.lang.Integer">
+    select count(author)
+    from d_author
+  </select>
+  <select id="selectAllAuthors" resultType="java.lang.String">
+    select distinct author
+    from d_author
+  </select>
+  <select id="selectAuthorPubCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(*)
+    from d_author
+    where author=#{author}
+  </select>
+  <select id="selectDocsByAuthor" parameterType="java.lang.String" resultType="java.lang.String">
+    select doc_title
+    from d_author
+    where author=#{author}
+  </select>
+  <select id="selectCiteCountByDoc" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count_art
+    from t_count
+    where doc_title=#{docTitle}
+  </select>
+  <select id="selectAuthorRanks" resultType="com.lxxz.oasis.ouroasis.po.AuthorRank">
+    select author as author,pub_count as pubCount,cite_count as citeCount
+    from author_rank
+    order by pub_count desc
+    limit 10;
+  </select>
+  <select id="selectAuthorCiteRanks" resultType="com.lxxz.oasis.ouroasis.po.AuthorRank">
+    select author as author,pub_count as pubCount,cite_count as citeCount
+    from author_rank
+    order by cite_count desc
+    limit 10;
+  </select>
+</mapper>

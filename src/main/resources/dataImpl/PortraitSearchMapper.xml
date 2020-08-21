@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxxz.oasis.ouroasis.data.PortraitSearchMapper">
+    <!--pub_title就是meeting-->
+    <select id="selectAuthorPotraitCount" resultType="int">
+        select count(da.author)
+        from
+            (select da0.author,author_aff,doc_title,heat from d_author da0 join h_author ha0 on da0.author=ha0.author where da0.author=#{authorName}) as da
+                join
+            t_pub pu
+            on
+                da.doc_title=pu.doc_title
+                join
+            t_count c
+            on
+                da.doc_title=c.doc_title
+                join
+            d_key dk
+            on
+                da.doc_title=dk.doc_title
+                join
+            d_author da1
+            on
+                da.doc_title=da1.doc_title
+        where da1.author_aff!='NA' and da.author_aff!='NA'
+    </select>
+
+    <select id="selectPortraitsByAuthor" resultMap="AuthorPortrait">
+        select da.author,da.author_aff,da.heat,da.doc_title,author_key,count_ref,pub_year,pub_title,da1.author as da1_author,da1.author_aff as da1_author_aff
+        from
+            (select da0.author,author_aff,doc_title,heat from d_author da0 join h_author ha0 on da0.author=ha0.author and da0.author_aff=ha0.aff where da0.author like concat('%',#{authorName},'%')) as da
+                join
+            t_pub pu
+            on
+                da.doc_title=pu.doc_title
+                join
+            t_count c
+            on
+                da.doc_title=c.doc_title
+                join
+            d_key dk
+            on
+                da.doc_title=dk.doc_title
+                join
+            d_author da1
+            on
+                da.doc_title=da1.doc_title
+        where da1.author_aff!='NA' and da.author_aff!='NA'
+        order by CONVERT(da.author USING gbk)
+    </select>
+
+    <select id="selectPortraitsByAffiliation" resultMap="AffiliationPortraits">
+        select distinct da.author_aff,heat
+        from (select author_aff,author,doc_title from d_author where author_aff like concat('%',#{affiliation},'%')) as da
+        join h_aff ha
+        on da.author_aff=ha.aff
+        order by CONVERT(da.author_aff USING gbk)
+    </select>
+
+    <select id="selectPortraitsByDirection" resultMap="DirectionPortraits">
+        select distinct lcase(dk.author_key) as author_key,heat
+        from (select author_key from d_key where author_key like concat('%',#{direction},'%')) as dk
+        join h_key hk
+        on dk.author_key=hk.keyword
+        order by CONVERT(dk.author_key USING gbk)
+    </select>
+
+    <select id="selectPortraitsByMeeting" resultMap="MeetingPortraits">
+        select distinct pub_title
+        from  t_pub where pub_title like concat('%',#{meeting},'%')
+        order by CONVERT(pub_title USING gbk)
+    </select>
+
+    <select id="selectPortraitByAuthorAndAff" resultMap="AuthorPortrait">
+        select da.author,da.author_aff,da.heat,da.doc_title,author_key,count_ref,pub_year,pub_title,da1.author as da1_author,da1.author_aff as da1_author_aff
+        from
+        (select da0.author,author_aff,doc_title,heat from d_author da0 join h_author ha0 on da0.author=ha0.author and da0.author_aff=ha0.aff where da0.author=#{authorName} and da0.author_aff=#{aff}) as da
+        join
+        t_pub pu
+        on
+        da.doc_title=pu.doc_title
+        join
+        t_count c
+        on
+        da.doc_title=c.doc_title
+        join
+        d_key dk
+        on
+        da.doc_title=dk.doc_title
+        join
+        d_author da1
+        on
+        da.doc_title=da1.doc_title
+        where da1.author_aff!='NA' and da.author_aff!='NA'
+        order by count_ref desc
+    </select>
+
+    <select id="selectPortraitByAffiliation" resultMap="AffiliationPortrait">
+        select da.author_aff,da.author,heat,da.doc_title,count_ref,author_key,pub_year,pub_title
+        from (select author_aff,author,doc_title from d_author where author_aff=#{affiliation}) as da
+        join h_author ha
+        on da.author=ha.author and da.author_aff=ha.aff
+        join t_count tc
+        on da.doc_title=tc.doc_title
+        join d_key dk
+        on da.doc_title=dk.doc_title
+        join t_pub tp
+        on da.doc_title=tp.doc_title
+        order by count_ref desc
+    </select>
+
+    <select id="selectPortraitByDirection" resultMap="DirectionPortrait">
+        select lcase(dk.author_key) as author_key,da.author,author_aff,heat,dk.doc_title,count_ref,pub_year,pub_title
+        from (select doc_title,author_key from d_key where author_key=#{direction}) as dk
+        join d_author da
+        on dk.doc_title=da.doc_title
+        join h_author ha
+        on da.author=ha.author and da.author_aff=ha.aff
+        join t_count tc
+        on dk.doc_title=tc.doc_title
+        join t_pub tp
+        on dk.doc_title=tp.doc_title
+        where da.author_aff!='NA'
+        order by count_ref desc
+    </select>
+
+    <select id="selectPortraitByMeeting" resultMap="MeetingPortrait">
+        select pub_year,pub_title,da.author,heat,tp.doc_title,count_ref,author_key,author_aff
+        from (select doc_title,pub_title,pub_year from t_pub where pub_title=#{meeting}) as tp
+        join d_author da
+        on tp.doc_title=da.doc_title
+        join t_count tc
+        on tp.doc_title=tc.doc_title
+        join d_key dk
+        on tp.doc_title=dk.doc_title
+        join h_author ha
+        on da.author=ha.author
+        where da.author_aff!='NA'
+        order by count_ref desc
+    </select>
+
+    <select id="selectAllMeetings" resultType="String">
+        select distinct pub_year
+        from t_pub
+        order by pub_year asc
+    </select>
+
+    <resultMap id="AuthorPortrait" type="com.lxxz.oasis.ouroasis.po.AuthorPortrait">
+        <result column="author" property="name"></result>
+        <result column="heat" property="heat"></result>
+        <collection property="affiliations" ofType="String">
+            <result column="author_aff"></result>
+        </collection>
+        <collection property="documents" ofType="com.lxxz.oasis.ouroasis.po.Document">
+            <result column="doc_title" property="documentTitle"></result>
+            <result column="count_ref" property="referenceCount"></result>
+            <result column="pub_title" property="publicationTitle"></result>
+            <result column="pub_year" property="publicationYear"></result>
+            <collection property="keywords" ofType="String">
+                <result column="author_key"></result>
+            </collection>
+            <collection property="authors" ofType="com.lxxz.oasis.ouroasis.po.Author">
+                <result column="da1_author" property="name"></result>
+                <result column="da1_author_aff" property="affiliation"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <resultMap id="AffiliationPortrait" type="com.lxxz.oasis.ouroasis.po.AffiliationPortrait">
+        <result column="author_aff" property="name"></result>
+        <collection property="documents" ofType="com.lxxz.oasis.ouroasis.po.Document">
+            <result column="doc_title" property="documentTitle"></result>
+            <result column="count_ref" property="referenceCount"></result>
+            <result column="pub_title" property="publicationTitle"></result>
+            <result column="pub_year" property="publicationYear"></result>
+            <collection property="keywords" ofType="String">
+                <result column="author_key"></result>
+            </collection>
+        </collection>
+        <collection property="authorPortraits" ofType="com.lxxz.oasis.ouroasis.po.AuthorPortrait">
+            <result column="author" property="name"></result>
+            <result column="heat" property="heat"></result>
+        </collection>
+    </resultMap>
+
+    <resultMap id="AffiliationPortraits" type="com.lxxz.oasis.ouroasis.po.AffiliationPortrait">
+        <result column="author_aff" property="name"></result>
+        <result column="heat" property="heat"></result>
+    </resultMap>
+
+    <resultMap id="DirectionPortraits" type="com.lxxz.oasis.ouroasis.po.DirectionPortrait">
+        <result column="author_key" property="name"></result>
+        <result column="heat" property="heat"></result>
+    </resultMap>
+
+    <resultMap id="MeetingPortraits" type="com.lxxz.oasis.ouroasis.po.MeetingPortrait">
+        <result column="pub_title" property="name"></result>
+    </resultMap>
+
+    <resultMap id="DirectionPortrait" type="com.lxxz.oasis.ouroasis.po.DirectionPortrait">
+        <result column="author_key" property="name"></result>
+        <collection property="authorPortraits" ofType="com.lxxz.oasis.ouroasis.po.AuthorPortrait">
+            <result column="author" property="name"></result>
+            <result column="heat" property="heat"></result>
+        </collection>
+        <collection property="documents" ofType="com.lxxz.oasis.ouroasis.po.Document">
+            <result column="doc_title" property="documentTitle"></result>
+            <result column="count_ref" property="referenceCount"></result>
+            <result column="pub_title" property="publicationTitle"></result>
+            <result column="pub_year" property="publicationYear"></result>
+        </collection>
+        <collection property="affiliationPortraits" ofType="com.lxxz.oasis.ouroasis.po.AffiliationPortrait">
+            <result column="author_aff" property="name"></result>
+            <collection property="authorPortraits" ofType="com.lxxz.oasis.ouroasis.po.AuthorPortrait">
+                <result column="author" property="name"></result>
+                <result column="heat" property="heat"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <resultMap id="MeetingPortrait" type="com.lxxz.oasis.ouroasis.po.MeetingPortrait">
+        <result column="pub_title" property="name"></result>
+        <collection property="authorPortraits" ofType="com.lxxz.oasis.ouroasis.po.AuthorPortrait">
+            <result column="author" property="name"></result>
+            <result column="heat" property="heat"></result>
+        </collection>
+        <collection property="documents" ofType="com.lxxz.oasis.ouroasis.po.Document">
+            <result column="doc_title" property="documentTitle"></result>
+            <result column="count_ref" property="referenceCount"></result>
+            <collection property="keywords" ofType="String">
+                <result column="author_key"></result>
+            </collection>
+        </collection>
+        <collection property="affiliationPortraits" ofType="com.lxxz.oasis.ouroasis.po.AffiliationPortrait">
+            <result column="author_aff" property="name"></result>
+            <collection property="authorPortraits" ofType="com.lxxz.oasis.ouroasis.po.AuthorPortrait">
+                <result column="author" property="name"></result>
+                <result column="heat" property="heat"></result>
+            </collection>
+        </collection>
+    </resultMap>
+</mapper>

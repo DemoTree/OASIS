@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxxz.oasis.ouroasis.data.InterestPointMapper">
+    <select id="getMostPaperPublicationTitle" resultType="com.lxxz.oasis.ouroasis.po.Publication">
+        select pub_title as publicationTitle,count(*) as documentCount
+        from t_pub
+        group by pub_title
+        order by count(pub_title) desc
+        limit 10;
+
+    </select>
+    <select id="getMostReferenceDocumentTitle" resultType="String">
+        select doc_title
+        from t_count group by doc_title
+        order by count_ref desc
+        limit 10
+    </select>
+
+
+</mapper>

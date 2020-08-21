@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxxz.oasis.ouroasis.data.GraphMapper">
+
+
+<select id="getAuthorHeat" resultType="com.lxxz.oasis.ouroasis.vo.AuthorPortraitVO">
+    select distinct author as name,aff as aff ,heat as heat
+    from h_author
+    order by heat desc
+    limit 500;
+</select>
+
+<select id="getTitlesOfAuthor" resultType="String">
+    select doc_title
+    from d_author
+    where #{author} like author
+</select>
+
+<select id="getAuthorsByTitle" resultType="String">
+    select author
+    from d_author
+    where #{title} like doc_title
+</select>
+
+<select id="getAffHeat" resultType="com.lxxz.oasis.ouroasis.vo.AffiliationPortraitVO">
+    select distinct aff as name,heat as heat
+    from h_aff
+    order by heat desc
+    limit 100;
+</select>
+
+<select id="getHeatOfAuthor" resultType="int">
+    select heat
+    from h_author
+    where author=#{author}
+</select>
+
+<select id="getTitlesByAff" resultType="String">
+    select distinct doc_title
+    from d_author
+    where author_aff=#{aff}
+</select>
+
+<select id="getAffsByTitle" resultType="String">
+    select distinct author_aff
+    from d_author
+    where doc_title=#{title}
+</select>
+
+<select id="getDirHeat" resultType="com.lxxz.oasis.ouroasis.vo.DirectionPortraitVO">
+    select distinct keyword as name,heat as heat
+    from h_key
+    order by heat desc
+    limit 100
+</select>
+
+<select id="getTitlesByDir" resultType="String">
+    select distinct doc_title
+    from d_key
+    where author_key=#{dir}
+</select>
+
+<select id="getDirsByTitle" resultType="String">
+    select distinct author_key
+    from d_key
+    where doc_title=#{title}
+</select>
+</mapper>

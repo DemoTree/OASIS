@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxxz.oasis.ouroasis.data.InterestPointMapper2">
+    <select id="getAuthorHeatRank" resultMap="AuthorHeat">
+        select ha.author,heat,author_key,da.doc_title,count_ref
+        from (select * from h_author where author!='' order by heat desc limit 10) ha
+        join d_author da
+        on ha.author=da.author
+        join d_key dk
+        on da.doc_title=dk.doc_title
+        join t_count tc
+        on da.doc_title=tc.doc_title
+        order by heat desc
+    </select>
+
+
+    <select id="getAffiliationHeatRank" resultMap="AffiliationHeat">
+        use oasis;
+        select aff,heat,author,da.doc_title,count_ref,author_key
+        from (select aff,heat from h_aff where h_aff.aff!='NA' order by heat desc limit 10) ha
+        join d_author da
+        on ha.aff=da.author_aff
+        join t_count tc
+        on da.doc_title=tc.doc_title
+        join d_key dk
+        on da.doc_title=dk.doc_title
+        order by heat desc
+    </select>
+
+
+
+    <select id="getDirectionHeatRank" resultType="com.lxxz.oasis.ouroasis.po.Direction">
+        select keyword as name,heat as heat
+        from h_key
+        order by heat desc
+        limit 10
+    </select>
+
+    <resultMap id="AuthorHeat" type="com.lxxz.oasis.ouroasis.po.Author2">
+        <result column="author" property="name"></result>
+        <result column="heat" property="heat"></result>
+        <collection property="documents" ofType="com.lxxz.oasis.ouroasis.po.Document">
+            <result column="doc_title" property="documentTitle"></result>
+            <result column="count_ref" property="referenceCount"></result>
+            <collection property="keywords" ofType="String">
+                <result column="author_key"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+
+    <resultMap id="AffiliationHeat" type="com.lxxz.oasis.ouroasis.po.Affiliation">
+        <result column="aff" property="name"></result>
+        <result column="heat" property="heat"></result>
+        <collection property="documents" ofType="com.lxxz.oasis.ouroasis.po.Document">
+            <result column="doc_title" property="documentTitle"></result>
+            <result column="count_ref" property="referenceCount"></result>
+            <collection property="keywords" ofType="String">
+                <result column="author_key"></result>
+            </collection>
+        </collection>
+        <collection property="authors" ofType="com.lxxz.oasis.ouroasis.po.Author2">
+            <result column="author" property="name"></result>
+        </collection>
+    </resultMap>
+</mapper>

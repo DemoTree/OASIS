@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Author_Portrait</title>
+    <!--FONTS-->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+    <!--CSS-->
+    <link rel="stylesheet" href="css/AffiliationPortraitPage.css">
+    <!--JS-->
+    <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="js/Request.js"></script>
+    <script type="text/javascript" src="js/AffiliationPortraitPage.js"></script>
+    <script src="/js/echarts.min.js"> </script>
+    <script src="/js/echarts-wordcloud.min.js"></script>
+</head>
+<body>
+<div class="max-box">
+    <div class="box-header">
+        <div class="box-header-title">Affiliation info</div>
+        <hr color="black">
+    </div>
+    <div class="header-box">
+        <div id="header-affiliation" class="header-affiliation">Affiliation</div>
+    </div>
+    <br>
+    <div class="index-box">
+        <div class="left" style="height: 400px;">
+            <div class="info-box">
+                <span id="heat-title" class="index-title" style="float:left">Heat :</span>
+                <span id="heat-num" class="index-num" style="float:right">loading</span>
+                <br>
+            </div>
+            <div class="info-box">
+                <span id="paper-title" class="index-title" style="float:left">Number of Papers :</span>
+                <span id="paper-num" class="index-num" style="float:right">loading</span>
+                <br>
+            </div>
+            <div class="info-box">
+                <span id="scholar-title" class="index-title" style="float:left">Number of Scholars :</span>
+                <span id="scholar-num" class="index-num" style="float:right">loading</span>
+                <br>
+            </div>
+            <div class="info-box">
+                <div id="cites-title" class="index-title" style="float:left">Total Cites :</div>
+                <span id="cites-num" class="index-num" style="float:right">loading</span>
+            </div>
+        </div>
+
+        <div class="right" style="height: 400px;">
+            <div id="direction-title" class="direction-title">Research Direction</div>
+            <div id="direction-detail" >loading</div>
+        </div>
+    </div>
+
+    <div class="button-box">
+        <div class="paper-list">
+            <div class="list-header" style="overflow:hidden">
+                <div class="page-tabs">
+                    <div id="tab-authors" class="page-tab page-tab-active">
+                        <span class="list-header" style="float: left; margin-right:16px">Author List</span>
+                        <span class="list-header" id="list-author-num" style="float: left">loading</span>
+                    </div>
+                    <div class="list-header-mid"> | </div>
+                    <div id="tab-papers" class="page-tab">
+                        <span class="list-header" style="float: left; margin-right:16px">Paper List</span>
+                        <span class="list-header" id="list-paper-num" style="float: left">loading</span>
+                    </div>
+                    <div class="list-header-mid"> | </div>
+
+                    <div id="tab-meetings" class="page-tab">
+                        <span class="list-header" style="float: left; margin-right:16px">Conference List</span>
+                        <span class="list-header" id="list-meeting-num" style="float: left">loading</span>
+                    </div>
+                </div>
+            </div>
+            <table class="result-table">
+                <thead>
+                <tr id="table-tr">
+                    <th>No</th>
+                    <th>Name</th>
+                </tr>
+                </thead>
+                <tbody class="result-one" id="result-one"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
