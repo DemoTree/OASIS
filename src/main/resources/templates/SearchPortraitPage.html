@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search_Paper</title>
+
+    <!--CSS-->
+    <link rel="stylesheet" href="css/SearchPortraitStyle.css">
+
+    <!--js-->
+    <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="js/Request.js"></script>
+    <script type="text/javascript" src="js/SearchPortraitScript.js"></script>
+
+</head>
+<body>
+    <div class="empty-box"></div>
+    <div class="slogan-box">
+        <div class="slogan-head">
+            OASIS
+        </div>
+        <div class="slogan-content">
+            What kind of portrait do you want?
+        </div>
+    </div>
+    <input id="current-num" style="display: none" value="1">
+    <div class="search-box">
+        <table class="search-table">
+            <tbody>
+            <tr id="line0" class="search-key">
+                <td class="number-control-btn"></td>
+                <td class="search-info">
+                    <select id="search-type-0" class="search-type-0">
+                        <option value="author">Author</option>
+                        <option value="affiliation">Affiliation</option>
+                        <option value="conference">Conference</option>
+                        <option value="keyword">Keyword</option>
+                    </select>
+                    <input id="search-value-0" class="search-value-0">
+                </td>
+                <td class="search-btn">
+                    <button class="search-confirm-btn" id="search-start-btn-0"></button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="empty-box"></div>
+</body>
